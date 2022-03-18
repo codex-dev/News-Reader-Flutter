@@ -1,7 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:news_app/screens/SearchScreen.dart';
+import 'package:news_app/screens/NewsInfoScreen.dart';
 
 void main() {
+  HttpOverrides.global = new MyHttpOverrides();
   runApp(const NewsApp());
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+    ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
 }
 
 class NewsApp extends StatelessWidget {
@@ -13,42 +26,11 @@ class NewsApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'News App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: Container(
-        width: double.infinity,
-        height: 45,
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(5)),
-        child: Center(
-          child: TextField(
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.clear),
-                  onPressed: () {},
-                ),
-                hintText: 'Search..',
-                border: InputBorder.none,
-              ),
-              textInputAction: TextInputAction.search),
-        ),
-      )),
+      routes: {
+        '/': (context) => SearchScreen(),
+        '/info': (context) => NewsInfoScreen(),
+      },
+      initialRoute: '/',
     );
   }
 }
